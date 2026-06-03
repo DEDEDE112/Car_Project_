@@ -1,3 +1,9 @@
+import sys
+import os
+
+# 🚨 【雲端核心防禦】強制將 main.py 所在資料夾加入搜尋路徑
+# 這樣在 Streamlit Cloud 部署時，ui, engine, processor 才能順利被互相互叫
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import streamlit as st
 from processor import load_and_filter_data
 from engine import RAGEngine
