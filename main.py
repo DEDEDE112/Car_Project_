@@ -1,3 +1,7 @@
+import sys
+import os
+# 🚨 關鍵防禦：強制將目前 main.py 所在的資料夾路徑加入 Python 的搜尋路徑中
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import streamlit as st
 from processor import load_and_filter_data
 from engine import RAGEngine
