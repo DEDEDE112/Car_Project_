@@ -36,6 +36,44 @@ class RAGEngine:
 # 提醒：建議使用環境變數 os.getenv("OPENAI_API_KEY") 替換硬編碼金鑰
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+def check_input_sanity(user_query: str) -> dict:
+    """
+    過濾無意義的垃圾輸入、惡意刷字、或與二手車爭議完全無關的內容。
+    """
+    # 基本長度攔截
+    if len(user_query.strip()) < 8:
+        return {"is_valid": False, "reason": "輸入內容過短，請提供更詳細的爭議情境。"}
+
+    prompt = f"""
+    請評估以下使用者輸入的內容，是否為一段「有具體溝通意圖、表達二手車租賃或相關民事爭議」的有意義文字。
+    
+    如果是以下情況，請判定為【無意義】(is_valid: false)：
+    1. 惡意重複相同的單字或胡亂湊字（例如：折舊折舊折舊、10元10元10元）。
+    2. 完全隨機的亂碼或無意義符號（例如：asdfghjkl、%%%%%）。
+    3. 與二手車、汽車租賃、車損、賠償、合約爭議完全無關的內容（例如：今天天氣很好、推薦台北好吃的滷肉飯）。
+
+    請嚴格以 JSON 格式回覆，欄位如下：
+    {{
+        "is_valid": true 或 false,
+        "reason": "如果無意義，請寫下一句給使用者的友善提示引導；若有意義則為空字串"
+    }}
+
+    使用者輸入：{user_query}
+    """
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"}, # 強制輸出 JSON
+            temperature=0,
+            seed=42
+        )
+        import json
+        return json.loads(response.choices[0].message.content)
+    except Exception:
+        # 萬一 API 壞掉，預設放行，避免影響系統運作
+        return {"is_valid": True, "reason": ""}
+    
 def get_legal_summary(user_query, legal_documents):
     """把使用者的問題和找出來的多份判決書，一起丟給 GPT 做綜合風險評估"""
     
