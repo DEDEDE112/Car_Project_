@@ -9,13 +9,13 @@ ui.py — 二手車租約風險評估系統 · 重構版
 """
 import sys
 import os
-# 🚨 雲端終極防禦：讓 ui.py 在被 main.py 呼叫的瞬間，自己先把當前目錄加進 sys.path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# 這裡才是你原本的第 13 行，現在變成這樣：
-from engine import get_legal_summary, check_input_sanity
+# 🚨 雲端終極防禦：強行注入絕對路徑，確保同級匯入絕對不迷路
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
 import streamlit as st
-# ✅ 修改後：同時 import 這兩個函式
 from engine import get_legal_summary, check_input_sanity
 
 
