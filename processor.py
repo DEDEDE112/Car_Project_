@@ -5,7 +5,8 @@ from pathlib import Path
 import streamlit as st
 
 def load_and_filter_data():
-    base_dir = Path(__file__).resolve().parent.parent
+    # 🚨 關鍵修改：因為檔案已經平鋪在根目錄，只要退一層 .parent 就是根目錄了！
+    base_dir = Path(__file__).resolve().parent
     data_dir = base_dir / "data"
     
     files = ["中古車_dataset_2000~2020.xlsx", "中古車_dataset_2021~2025.xlsx"]
