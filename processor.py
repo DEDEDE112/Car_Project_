@@ -5,23 +5,30 @@ from pathlib import Path
 import streamlit as st
 
 def load_and_filter_data():
-    # 🚨 關鍵修改：因為檔案已經平鋪在根目錄，只要退一層 .parent 就是根目錄了！
+   def load_and_filter_data():
+    # 🚨 終極修正：因為 Excel 檔案和 processor.py 都躺在同一個根目錄
+    # 我們直接將 base_dir 鎖定在當前檔案所在的資料夾
     base_dir = Path(__file__).resolve().parent
-    data_dir = base_dir / "data"
     
+    # 🚨 關鍵改變：不另外切進 "data" 資料夾，直接在同層目錄抓檔
     files = ["中古車_dataset_2000~2020.xlsx", "中古車_dataset_2021~2025.xlsx"]
     all_dfs = []
     
     for f in files:
-        p = data_dir / f
+        p = base_dir / f  # 👈 直接讀取根目錄下的 Excel
         if p.exists():
             df = pd.read_excel(p)
-            # 🚨 修正點：自動修正欄位名稱左右空白
             df.columns = df.columns.str.strip()
             all_dfs.append(df)
             print(f"📖 讀取檔案成功：{f}，欄位有：{df.columns.tolist()}")
         else:
             print(f"⚠️ 找不到檔案：{p}")
+
+    if not all_dfs:
+        st.error("❌ 在專案目錄下完全找不到 Excel 資料，請確認檔案名稱是否正確！")
+        return None
+
+    full_df = pd.concat(all_dfs, ignore_index=True)
 
     if not all_dfs:
         st.error("❌ 完全找不到 Excel 資料，請檢查 data 資料夾路徑！")
