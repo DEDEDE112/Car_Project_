@@ -7,15 +7,9 @@ ui.py — 二手車租約風險評估系統 · 重構版
   - 所有量化指標均從這兩個回傳的「字串」推導，不新增任何後端呼叫
   - analysis_results dict 作為 UI 各區塊的統一資料來源，方便後續整合
 """
-import sys
-import os
-
-# 🚨 雲端終極防禦：強行注入絕對路徑，確保同級匯入絕對不迷路
-current_dir = os.path.dirname(os.path.abspath(__file__))
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir)
 
 import streamlit as st
+# ✅ 修改後：同時 import 這兩個函式
 from engine import get_legal_summary, check_input_sanity
 
 
