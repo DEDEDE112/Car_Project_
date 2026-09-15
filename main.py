@@ -1,7 +1,7 @@
 import streamlit as st
-from processor import load_and_filter_data
-from engine import RAGEngine
-from ui import run_ui
+from src.processor import load_and_filter_data
+from src.engine import RAGEngine
+from src.ui import run_ui
 
 # 加上快取魔法咒語，讓系統只在第一次啟動時讀取大數據
 @st.cache_resource
